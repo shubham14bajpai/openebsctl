@@ -20,15 +20,14 @@ import (
 	"flag"
 
 	cluster_info "github.com/openebs/openebsctl/cmd/cluster-info"
-	"github.com/openebs/openebsctl/pkg/util"
-
-	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
-
 	"github.com/openebs/openebsctl/cmd/completion"
 	"github.com/openebs/openebsctl/cmd/describe"
+	"github.com/openebs/openebsctl/cmd/generate"
 	"github.com/openebs/openebsctl/cmd/get"
 	v "github.com/openebs/openebsctl/cmd/version"
+	"github.com/openebs/openebsctl/pkg/util"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 const (
@@ -38,6 +37,7 @@ const (
 Available Commands:
   completion    Outputs shell completion code for the specified shell (bash or zsh)
   describe      Provide detailed information about an OpenEBS resource
+  generate      Helps generate a storage custom resource
   get           Provides fetching operations related to a Volume/Pool
   help          Help about any command
   version       Shows openebs kubectl plugin's version
@@ -80,6 +80,7 @@ Find out more about OpenEBS on https://openebs.io/`,
 		describe.NewCmdDescribe(cmd),
 		v.NewCmdVersion(cmd),
 		cluster_info.NewCmdClusterInfo(cmd),
+		generate.NewCmdGenerate(),
 	)
 	cmd.PersistentFlags().StringVarP(&openebsNs, "openebs-namespace", "", "", "to read the openebs namespace from user.\nIf not provided it is determined from components.")
 	cmd.PersistentFlags().StringVarP(&util.Kubeconfig, "kubeconfig", "c", "", "path to config file")

@@ -761,7 +761,32 @@ func (k K8sClient) GetDeploymentList(labelSelector string) (*appsv1.DeploymentLi
 		LabelSelector: labelSelector,
 	}); err == nil && len(pv.Items) >= 1 {
 		return pv, nil
-	} else {
-		return nil, fmt.Errorf("got 0 deployments with label-Selector as %s", labelSelector)
 	}
+	return nil, fmt.Errorf("got 0 deployments with label-Selector as %s", labelSelector)
+}
+
+// GetNodes returns a list of nodes with the name of nodes
+func (k K8sClient) GetNodes(nodes []string, label, field string) (*corev1.NodeList, error) {
+	// 1. Get all nodes
+	n, err := k.K8sCS.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{
+		LabelSelector: label,
+		FieldSelector: field})
+	if len(nodes) == 0 {
+		return n, err
+	}
+	// 2. Put them in a map[string]*corev1.Node
+	nodeMap := make(map[string]corev1.Node)
+	for _, item := range n.Items {
+		nodeMap[item.Name] = item
+	}
+	// 3. Get the nodes by the name nodes
+	var items []corev1.Node
+	for _, name := range nodes {
+		if _, ok := nodeMap[name]; ok {
+			items = append(items, nodeMap[name])
+		}
+	}
+	return &corev1.NodeList{
+		Items: items,
+	}, nil
 }
